@@ -3,7 +3,7 @@ package com.engine.board;
 import com.engine.board.BoardUtils.*;
 
 /**
- * Abstract? Tile class that is every Tile in the chess board that contains a piece
+ *  Tile class that is every Tile in the chess board that contains a piece
  */
 
 /*
@@ -13,6 +13,7 @@ import com.engine.board.BoardUtils.*;
 public  class Tile {
 
     private Piece piece;
+    private EPType pType;
     private Color color;
 
     /**
@@ -25,19 +26,21 @@ public  class Tile {
         this.color = color;
     }
 
+    public Piece getPiece() { return  this.piece; }
+
+    public void setPiece(Piece piece) {
+        this.piece = piece;
+    }
+
+    public EPType getEPType() { return  this.pType; }
+
+    public void setEPtype(EPType pType) { this.pType = pType; }
+
     public Color getColor() {
         return  color;
     }
 
     public void setColor(Color color) {
         this.color = color;
-    }
-
-    public Piece getPiece() {
-        return  piece;
-    }
-
-    public void setPiece(Piece piece) {
-        this.piece = piece;
     }
 }

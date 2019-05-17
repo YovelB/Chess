@@ -1,18 +1,24 @@
 package com.engine.board;
 
 import com.engine.board.BoardUtils.*;
+import com.engine.pieces.Piece;
 
 /**
  * Board class that represents the gameBoard
  */
 public class Board {
-    Tile[][] gameBoard;
 
-    /**
+    public Tile getTile (final int tileCoordinate) {
+        return null;
+    }
+}
+    /*Tile[][] gameBoard;
+
+    *//**
      * Constructor that generates a two dimension array of EmptyTiles
      * rank is the current Row a - h
      * file is the current Column 1 - 8
-     */
+     *//*
     public Board() {
         gameBoard = new Tile[8][8];
         for (int rank = 0; rank < 8; rank++) {
@@ -81,4 +87,4 @@ public class Board {
     public void setTile(Tile tile, int rank, int file) {
         gameBoard[rank][file] = tile;
     }
-}
+}*/

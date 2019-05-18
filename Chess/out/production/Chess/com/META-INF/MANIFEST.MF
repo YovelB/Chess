@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Class-Path: C:\Users\yovel\IdeaProjects\Chess\Chess\out\artifacts\Ches
+ s
+Main-Class: com.engine.Main
+

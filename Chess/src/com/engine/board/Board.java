@@ -1,90 +1,151 @@
 package com.engine.board;
 
-import com.engine.board.BoardUtils.*;
-import com.engine.pieces.Piece;
+import com.engine.Alliance;
+import com.engine.pieces.*;
+import com.engine.player.BlackPlayer;
+import com.engine.player.WhitePlayer;
+import com.google.common.collect.ImmutableList;
+
+import java.util.*;
 
 /**
  * Board class that represents the gameBoard
  */
 public class Board {
 
-    public Tile getTile (final int tileCoordinate) {
-        return null;
+    private final List<Tile> gameBoard;
+    private final Collection<Piece> whitePieces;
+    private final Collection<Piece> blackPieces;
+
+    private final WhitePlayer whitePlayer;
+    private final BlackPlayer blackPlayer;
+
+    private Board(Builder builder) {
+        this.gameBoard = createGameBoard(builder);
+        this.whitePieces = calculateActivePieces(this.gameBoard, Alliance.WHITE);
+        this.blackPieces = calculateActivePieces(this.gameBoard, Alliance.BLACK);
+        final Collection<Move> whiteStandardLegalMove = calculateLegalMoves(this.whitePieces);
+        final Collection<Move> blackStandardLegalMove = calculateLegalMoves(this.blackPieces);
+        this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMove, blackStandardLegalMove);
+        this.blackPlayer = new BlackPlayer(this, whiteStandardLegalMove, blackStandardLegalMove);
     }
-}
-    /*Tile[][] gameBoard;
 
-    *//**
-     * Constructor that generates a two dimension array of EmptyTiles
-     * rank is the current Row a - h
-     * file is the current Column 1 - 8
-     *//*
-    public Board() {
-        gameBoard = new Tile[8][8];
-        for (int rank = 0; rank < 8; rank++) {
-            for (int file = 7; file >= 0; file--) {
-                Piece piece = new Piece();
-                piece.setType(EPType.EMPTY);
-                if (file == 0 || file == 7) {
-                    if (rank == 0 || rank == 7) {
-                        piece.setType(EPType.ROOK);
-                        if (file == 0)
-                            piece.setColor(Color.WHITE);
-                        else
-                            piece.setColor(Color.BLACK);
-                    }
-                    else if (rank == 1 || rank == 6) {
-                        piece.setType(EPType.KNIGHT);
-                        if (file == 0)
-                            piece.setColor(Color.WHITE);
-                        else
-                            piece.setColor(Color.BLACK);
-                    }
-                    else if (rank == 2 || rank == 5) {
-                        piece.setType(EPType.BISHOP);
-                        if (file == 0)
-                            piece.setColor(Color.WHITE);
-                        else
-                            piece.setColor(Color.BLACK);
-                    }
-                    else {
-                        if (rank == 3) {
-                            piece.setType(EPType.QUEEN);
-                        }
-                        else {
-                            piece.setType(EPType.KING);
-                        }
-                        if (file == 0) {
-
-                            piece.setColor(Color.WHITE);
-                        }
-                        else {
-                            piece.setColor(Color.BLACK);
-                        }
-                    }
-                }
-                else if (file == 1 || file == 6) {
-                    piece.setType(EPType.PAWN);
-                    if(file == 1)
-                        piece.setColor(Color.WHITE);
-                    else
-                        piece.setColor(Color.BLACK);
-                }
-
-                if ((rank + file) % 2 == 0)
-                    gameBoard[rank][file] = new Tile(piece ,Color.WHITE);
-                else
-                    gameBoard[rank][file] = new Tile(piece, Color.BLACK);
-
+    @Override
+    public String toString() {
+        final StringBuilder sBuilder = new StringBuilder();
+        for(int i = 0; i < BoardUtils.NUM_TILES; i++) {
+            final String tileText = this.gameBoard.get(i).toString();
+            sBuilder.append(String.format("%3s", tileText));
+            if((i + 1) % BoardUtils.NUM_TILES_PER_ROW == 0) {
+                sBuilder.append("\n");
             }
         }
+        return sBuilder.toString();
     }
 
-    public Tile getTile(int rank, int file) {
-        return gameBoard[rank][file];
+    public Collection<Piece> getBlackPieces() {
+        return this.blackPieces;
     }
 
-    public void setTile(Tile tile, int rank, int file) {
-        gameBoard[rank][file] = tile;
+    public Collection<Piece> getWhitePieces() {
+        return this.whitePieces;
     }
-}*/
+
+    private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
+        final List<Move> legalMoves = new ArrayList<>();
+        for(final Piece piece : pieces) {
+            legalMoves.addAll(piece.calculateLegalMoves(this));
+        }
+        return ImmutableList.copyOf(legalMoves);
+    }
+
+    private static Collection<Piece> calculateActivePieces(final List<Tile> gameBoard, final Alliance alliance) {
+        final List<Piece> activePieces = new ArrayList<>();
+        for(final Tile tile : gameBoard) {
+            if(tile.isTileOccupied()) {
+                final Piece piece = tile.getPiece();
+                if(piece.getPieceAlliance() == alliance) {
+                    activePieces.add(piece);
+                }
+            }
+        }
+        return ImmutableList.copyOf(activePieces);
+    }
+
+    public Tile getTile (final int tileCoordinate) {
+        return gameBoard.get(tileCoordinate);
+    }
+
+    public static List<Tile> createGameBoard(final Builder builder) {
+        final Tile[] tiles = new Tile[BoardUtils.NUM_TILES];
+        for(int i = 0; i < BoardUtils.NUM_TILES; i++) {
+            tiles[i] = Tile.createTile(i, builder.boardConfig.get(i));
+        }
+        return ImmutableList.copyOf(tiles);
+    }
+
+    public static Board createStandardBoard() {
+        final Builder builder = new Builder();
+        //Black layout
+        builder.setPiece(new Rook(0, Alliance.BLACK));
+        builder.setPiece(new Knight(1, Alliance.BLACK));
+        builder.setPiece(new Bishop(2, Alliance.BLACK));
+        builder.setPiece(new Queen(3, Alliance.BLACK));
+        builder.setPiece(new King(4, Alliance.BLACK));
+        builder.setPiece(new Bishop(5, Alliance.BLACK));
+        builder.setPiece(new Knight(6, Alliance.BLACK));
+        builder.setPiece(new Rook(7, Alliance.BLACK));
+        builder.setPiece(new Pawn(8, Alliance.BLACK));
+        builder.setPiece(new Pawn(9, Alliance.BLACK));
+        builder.setPiece(new Pawn(10, Alliance.BLACK));
+        builder.setPiece(new Pawn(11, Alliance.BLACK));
+        builder.setPiece(new Pawn(12, Alliance.BLACK));
+        builder.setPiece(new Pawn(13, Alliance.BLACK));
+        builder.setPiece(new Pawn(14, Alliance.BLACK));
+        builder.setPiece(new Pawn(15, Alliance.BLACK));
+        //White layout
+        builder.setPiece(new Pawn(48, Alliance.WHITE));
+        builder.setPiece(new Pawn(49, Alliance.WHITE));
+        builder.setPiece(new Pawn(50, Alliance.WHITE));
+        builder.setPiece(new Pawn(51, Alliance.WHITE));
+        builder.setPiece(new Pawn(52, Alliance.WHITE));
+        builder.setPiece(new Pawn(53, Alliance.WHITE));
+        builder.setPiece(new Pawn(54, Alliance.WHITE));
+        builder.setPiece(new Pawn(55, Alliance.WHITE));
+        builder.setPiece(new Rook(56, Alliance.WHITE));
+        builder.setPiece(new Knight(57, Alliance.WHITE));
+        builder.setPiece(new Bishop(58, Alliance.WHITE));
+        builder.setPiece(new Queen(59, Alliance.WHITE));
+        builder.setPiece(new King(60, Alliance.WHITE));
+        builder.setPiece(new Bishop(61, Alliance.WHITE));
+        builder.setPiece(new Knight(62, Alliance.WHITE));
+        builder.setPiece(new Rook(63, Alliance.WHITE));
+        //White moves first
+        builder.setMoveMaker(Alliance.WHITE);
+        return builder.build();
+    }
+
+    public static class Builder {
+
+        Map<Integer, Piece> boardConfig;
+        Alliance nextMoveMaker;
+
+        public Builder() {
+            this.boardConfig = new HashMap<>();
+        }
+
+        public Builder setPiece(final Piece piece) {
+            this.boardConfig.put(piece.getPiecePosition(), piece);
+            return this;
+        }
+
+        public Builder setMoveMaker(final Alliance nextMoveMaker) {
+            this.nextMoveMaker = nextMoveMaker;
+            return this;
+        }
+
+        public Board build() {
+            return new Board(this);
+        }
+    }
+}

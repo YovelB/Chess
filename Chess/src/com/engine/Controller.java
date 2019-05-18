@@ -20,11 +20,11 @@ import java.util.ResourceBundle;
  * @author yovel
  */
 
-public class Controller implements Initializable
+public class Controller // implements Initialize
 {
     @FXML GridPane gridPane;
-
-    /**
+/*
+    *//**
      * Initialize method that will create all the objects on the board before starting the game
      * ranks = rows, files = columns
      *
@@ -33,7 +33,7 @@ public class Controller implements Initializable
      *
      * @param location
      * @param resources
-     */
+     *//*
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         final String[] strImages = {"wp", "wr", "wn", "wb", "wq", "wk", "bp", "br", "bn", "bb", "bq", "bk"};
@@ -142,5 +142,5 @@ public class Controller implements Initializable
                 imageViewArray[rank][file].setFitHeight(BoardUtils.tileHeight);
             }
         }
-    }
+    }*/
 }

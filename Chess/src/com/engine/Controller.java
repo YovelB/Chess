@@ -20,21 +20,33 @@ import java.util.ResourceBundle;
  * @author yovel
  */
 
-public class Controller // implements Initialize
-{
-    @FXML GridPane gridPane;
-/*
-    *//**
+public class Controller // implements Initializable
+    {
+
+    @FXML
+    GridPane gridPane;
+
+    /**
+     *
+     */
+    /**
      * Initialize method that will create all the objects on the board before starting the game
      * ranks = rows, files = columns
      *
      * The method iterates on all the GridPane nodes and creating new Panes with different colors (BLACK, WHITE - DARK BROWN, WHITE BROWN)
      * On each Pane we create a ImageView control that has an Image of EmptyPiece(no Image, transparent) or a piece image
      *
-     * @param location
-     * @param resources
-     *//*
-    @Override
+     * @param url
+     * @param resourceBundle
+     */
+   /* @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        Board gameBoard = new Board.Builder().build();
+
+        final String[] strImages = {"wp", "wr"}
+    }*/
+}
+    /*@Override
     public void initialize(URL location, ResourceBundle resources) {
         final String[] strImages = {"wp", "wr", "wn", "wb", "wq", "wk", "bp", "br", "bn", "bb", "bq", "bk"};
 
@@ -142,5 +154,5 @@ public class Controller // implements Initialize
                 imageViewArray[rank][file].setFitHeight(BoardUtils.tileHeight);
             }
         }
-    }*/
-}
+    }
+}*/

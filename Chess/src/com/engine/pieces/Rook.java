@@ -15,17 +15,9 @@ public class Rook extends Piece {
 
     private final static int[] CANDIDATE_MOVE_VECTOR_COORDINATE = {-8, -1, 1, 8};
 
-
     public Rook(final int piecePosition, final Alliance pieceAlliance) {
-        super(pieceType.ROOK, piecePosition, pieceAlliance);
+        super(piecePosition, pieceAlliance, PieceType.ROOK);
     }
-    private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -1);
-    }
-    private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == 1);
-    }
-
     /**
      * Calculates all the legal(available) moves of the Rook and return it as a list
      *
@@ -42,7 +34,7 @@ public class Rook extends Piece {
      */
     @Override
     public Collection<Move> calculateLegalMoves(Board board) {
-        final List<Move> legalMoves = new ArrayList<Move>();
+        final List<Move> legalMoves = new ArrayList<>();
         for (final int currentCandidateOffset : CANDIDATE_MOVE_VECTOR_COORDINATE) {
             int candidateDestinationCoordinate = this.getPiecePosition();
             while (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
@@ -70,8 +62,16 @@ public class Rook extends Piece {
         }
         return ImmutableList.copyOf(legalMoves);
     }
+
     @Override
     public String toString() {
-        return pieceType.ROOK.toString();
+        return PieceType.ROOK.toString();
+    }
+
+    private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
+        return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -1);
+    }
+    private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
+        return BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == 1);
     }
 }

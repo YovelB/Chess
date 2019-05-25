@@ -7,12 +7,12 @@ import com.engine.board.Move;
 import java.util.Collection;
 
 public abstract class Piece {
-    private final pieceType pieceType;
+    private final PieceType pieceType;
     private final int piecePosition;
     private final Alliance pieceAlliance;
     private final boolean isFirstMove;
 
-    Piece(final pieceType pieceType, final int piecePosition, final Alliance pieceAlliance) {
+    Piece(final int piecePosition, final Alliance pieceAlliance, final PieceType pieceType) {
         this.pieceType = pieceType;
         this.piecePosition = piecePosition;
         this.pieceAlliance = pieceAlliance;
@@ -28,7 +28,7 @@ public abstract class Piece {
         return this.pieceAlliance;
     }
 
-    public pieceType getPieceType() {
+    public PieceType getPieceType() {
         return this.pieceType;
     }
 
@@ -36,59 +36,6 @@ public abstract class Piece {
         return this.isFirstMove;
     }
 
-    //Each Piece has this func so it knows where it can Move
+    //Each Piece has this func so each piece has it's list of legal moves it can make
     public abstract Collection<Move> calculateLegalMoves(final Board board);
-
-    public enum pieceType {
-
-        PAWN("P") {
-            @Override
-            public boolean isKing() {
-                return false;
-            }
-        },
-        KNIGHT("N") {
-            @Override
-            public boolean isKing() {
-                return false;
-            }
-        },
-        BISHOP("B") {
-            @Override
-            public boolean isKing() {
-                return false;
-            }
-        },
-        ROOK("R") {
-            @Override
-            public boolean isKing() {
-                return false;
-            }
-        },
-        QUEEN("Q") {
-            @Override
-            public boolean isKing() {
-                return false;
-            }
-        },
-        KING("K") {
-            @Override
-            public boolean isKing() {
-                return true;
-            }
-        };
-
-        private String pieceName;
-
-        pieceType(final String pieceName) {
-            this.pieceName = pieceName;
-        }
-
-        @Override
-        public String toString() {
-            return this.pieceName;
-        }
-
-        public abstract boolean isKing();
-    }
 }

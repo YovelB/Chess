@@ -3,13 +3,14 @@ package com.engine.board;
 import com.engine.Alliance;
 import com.engine.pieces.*;
 import com.engine.player.BlackPlayer;
+import com.engine.player.Player;
 import com.engine.player.WhitePlayer;
 import com.google.common.collect.ImmutableList;
 
 import java.util.*;
 
 /**
- * Board class that represents the gameBoard
+ * Board class that represents the gameBoard using a static Builder class
  */
 public class Board {
 
@@ -19,15 +20,56 @@ public class Board {
 
     private final WhitePlayer whitePlayer;
     private final BlackPlayer blackPlayer;
+    private final Player currentPlayer;
 
-    private Board(Builder builder) {
+    private Board(final Builder builder) {
         this.gameBoard = createGameBoard(builder);
         this.whitePieces = calculateActivePieces(this.gameBoard, Alliance.WHITE);
         this.blackPieces = calculateActivePieces(this.gameBoard, Alliance.BLACK);
-        final Collection<Move> whiteStandardLegalMove = calculateLegalMoves(this.whitePieces);
-        final Collection<Move> blackStandardLegalMove = calculateLegalMoves(this.blackPieces);
-        this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMove, blackStandardLegalMove);
-        this.blackPlayer = new BlackPlayer(this, whiteStandardLegalMove, blackStandardLegalMove);
+        final Collection<Move> whiteStandardLegalMoves = calculateLegalMoves(this.whitePieces);
+        final Collection<Move> blackStandardLegalMoves = calculateLegalMoves(this.blackPieces);
+        this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
+        this.blackPlayer = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
+        this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.whitePlayer, this.blackPlayer);
+    }
+
+    public Tile getTile (final int tileCoordinate) {
+        return gameBoard.get(tileCoordinate);
+    }
+
+    public Player getWhitePlayer() {
+        return this.whitePlayer;
+    }
+
+    public Player getBlackPlayer() {
+        return this.blackPlayer;
+    }
+
+    public Player getCurrentPlayer() {
+        return this.currentPlayer;
+    }
+
+    public Collection<Piece> getBlackPieces() {
+        return this.blackPieces;
+    }
+
+    public Collection<Piece> getWhitePieces() {
+        return this.whitePieces;
+    }
+
+    /**
+     * Creates a list of all possible legal moves for a given collection of pieces we use this func
+     * to calculate all legal moves of the whites pieces and all legal moves of the black pieces
+     * @param pieces for each piece we calculate its legal moves through its function
+     * we implemented in each piece type
+     * @return a none changeable list of legal moves
+     */
+    private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
+        final List<Move> legalMoves = new ArrayList<>();
+        for(final Piece piece : pieces) {
+            legalMoves.addAll(piece.calculateLegalMoves(this));
+        }
+        return ImmutableList.copyOf(legalMoves);
     }
 
     @Override
@@ -43,22 +85,12 @@ public class Board {
         return sBuilder.toString();
     }
 
-    public Collection<Piece> getBlackPieces() {
-        return this.blackPieces;
-    }
-
-    public Collection<Piece> getWhitePieces() {
-        return this.whitePieces;
-    }
-
-    private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
-        final List<Move> legalMoves = new ArrayList<>();
-        for(final Piece piece : pieces) {
-            legalMoves.addAll(piece.calculateLegalMoves(this));
-        }
-        return ImmutableList.copyOf(legalMoves);
-    }
-
+    /**
+     * Creates a list of all possible active pieces(alive pieces on the board) for a given alliance(Black/White)
+     * @param gameBoard is needed to access its contents(tiles, pieces)
+     * @param alliance is determining which side is activePieces for
+     * @return a none changeable list of active pieces on the board
+     */
     private static Collection<Piece> calculateActivePieces(final List<Tile> gameBoard, final Alliance alliance) {
         final List<Piece> activePieces = new ArrayList<>();
         for(final Tile tile : gameBoard) {
@@ -72,10 +104,11 @@ public class Board {
         return ImmutableList.copyOf(activePieces);
     }
 
-    public Tile getTile (final int tileCoordinate) {
-        return gameBoard.get(tileCoordinate);
-    }
-
+    /**
+     * creates all the tiles for the board
+     * @param builder is for accessing boardConfig
+     * @return a none changeable list of tiles
+     */
     public static List<Tile> createGameBoard(final Builder builder) {
         final Tile[] tiles = new Tile[BoardUtils.NUM_TILES];
         for(int i = 0; i < BoardUtils.NUM_TILES; i++) {
@@ -84,6 +117,12 @@ public class Board {
         return ImmutableList.copyOf(tiles);
     }
 
+    /**
+     * Creates all pieces and initialize the Board for the start of the game
+     * and makes White start first
+     *
+     * @return the board that
+     */
     public static Board createStandardBoard() {
         final Builder builder = new Builder();
         //Black layout
@@ -125,8 +164,11 @@ public class Board {
         return builder.build();
     }
 
-    public static class Builder {
 
+    /**
+     * Using a static Builder class for the complex class Board so it will be easier to manage
+     */
+    public static class Builder {
         Map<Integer, Piece> boardConfig;
         Alliance nextMoveMaker;
 

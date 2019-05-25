@@ -1,5 +1,9 @@
 package com.engine;
 
+import com.engine.player.BlackPlayer;
+import com.engine.player.Player;
+import com.engine.player.WhitePlayer;
+
 public enum Alliance {
     WHITE {
         @Override
@@ -15,6 +19,11 @@ public enum Alliance {
         @Override
         public boolean isWhite() {
             return true;
+        }
+
+        @Override
+        public Player choosePlayer(final WhitePlayer whitePlayer, final BlackPlayer blackPlayer) {
+            return whitePlayer;
         }
     },
     BLACK {
@@ -32,9 +41,16 @@ public enum Alliance {
         public boolean isWhite() {
             return false;
         }
+
+        @Override
+        public Player choosePlayer(final WhitePlayer whitePlayer, final BlackPlayer blackPlayer) {
+            return blackPlayer;
+        }
     };
 
     public abstract int getDirection();
     public abstract boolean isBlack();
     public abstract boolean isWhite();
+
+    public abstract Player choosePlayer(final WhitePlayer whitePlayer, final BlackPlayer blackPlayer);
 }

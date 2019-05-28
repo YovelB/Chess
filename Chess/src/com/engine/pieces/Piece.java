@@ -11,6 +11,9 @@ public abstract class Piece {
     private final int piecePosition;
     private final Alliance pieceAlliance;
     private final boolean isFirstMove;
+    // a variable that store a Piece(class or subclass) hashCode and pre computes it in the constructor(at the start)
+    private final int cachedHasCode;
+
 
     Piece(final int piecePosition, final Alliance pieceAlliance, final PieceType pieceType) {
         this.pieceType = pieceType;
@@ -18,6 +21,48 @@ public abstract class Piece {
         this.pieceAlliance = pieceAlliance;
         //TODO more work here!!!
         this.isFirstMove = false;
+        this.cachedHasCode = computeHashCode();
+    }
+
+    /**
+     * function that is for computing the hash code of Piece
+     * @return the Piece(class or sub class) hashCode
+     */
+    private int computeHashCode() {
+        int resualt = this.piecePosition;
+        resualt = 31 * resualt + this.pieceAlliance.hashCode();
+        resualt = 31 * resualt + this.pieceType.hashCode();
+        resualt = 31 * resualt + (this.isFirstMove ? 1 : 0);
+        return resualt;
+    }
+
+    /**
+     * needed for not only comparing two Piece objects via only reference(class it self) but comparing
+     * them(classes and subclasses) with their parameters
+     *
+     * we first compare by reference of the objects then check if it is the class or it is a subclass then we check
+     * if it has the same parameters
+     * @param other the other Object we compare with
+     * @return if the two objects are equal
+     */
+    @Override
+    public boolean equals(final Object other) {
+        if(this == other) {
+            return true;
+        }
+        if(!(other instanceof Piece)) {
+            return false;
+        }
+        final Piece otherPiece = (Piece) other;
+        return this.piecePosition == otherPiece.getPiecePosition() &&
+                this.pieceAlliance == otherPiece.getPieceAlliance() &&
+                this.pieceType == otherPiece.getPieceType() &&
+                this.isFirstMove == otherPiece.isFirstMove();
+    }
+
+    @Override
+    public int hashCode() {
+        return this.cachedHasCode;
     }
 
     public int getPiecePosition() {
@@ -38,4 +83,5 @@ public abstract class Piece {
 
     //Each Piece has this func so each piece has it's list of legal moves it can make
     public abstract Collection<Move> calculateLegalMoves(final Board board);
+    public abstract Piece movePiece(final Move move);
 }

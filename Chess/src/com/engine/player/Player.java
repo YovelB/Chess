@@ -6,6 +6,7 @@ import com.engine.board.Move;
 import com.engine.pieces.King;
 import com.engine.pieces.Piece;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +23,7 @@ public abstract class Player {
                      final Collection<Move> opponentMoves) {
         this.board = board;
         this.playerKing = establishKing();
-        this.legalMoves = legalMoves;
+        this.legalMoves = ImmutableList.copyOf(Iterables.concat(legalMoves, calculateKingCastles(legalMoves, opponentMoves)));
         //maybe change Player to this after testing
         this.isInCheck = !Player.calculateAttackOnTile(this.playerKing.getPiecePosition(), opponentMoves).isEmpty();
     }
@@ -75,8 +76,6 @@ public abstract class Player {
         return false;
     }
 
-    //makes the move on a imaginary board to test if the move is possible so the move wont get us so the king will be in check
-
     /**
      * the function checks if currentPlayer can make the candidateMove so it will not lead to an illegal move or to checking himself
      *
@@ -101,7 +100,12 @@ public abstract class Player {
         return new MoveTransition(this.board, candidateMove, MoveStatus.DONE);
     }
 
-    private static Collection<Move> calculateAttackOnTile(final int piecePosition, final Collection<Move> moves) {
+    public abstract Collection<Piece> getActivePieces();
+    public abstract Alliance getAlliance();
+    public abstract Player getOpponent();
+    protected abstract Collection<Move> calculateKingCastles(final Collection<Move> playerLegals,
+                                                             final Collection<Move> opponentLegals);
+    protected static Collection<Move> calculateAttackOnTile(final int piecePosition, final Collection<Move> moves) {
         final List<Move> attackTileMoves = new ArrayList<>();
         for(final Move candidateTileMove : moves) {
             if(piecePosition == candidateTileMove.getDestinationCoordinate()) {
@@ -110,8 +114,4 @@ public abstract class Player {
         }
         return ImmutableList.copyOf(attackTileMoves);
     }
-
-    public abstract Collection<Piece> getActivePieces();
-    public abstract Alliance getAlliance();
-    public abstract Player getOpponent();
 }

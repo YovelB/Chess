@@ -5,7 +5,7 @@ import com.engine.player.Player;
 import com.engine.player.WhitePlayer;
 
 public enum Alliance {
-    WHITE {
+    WHITE("w") {
         @Override
         public int getDirection() {
             return -1;
@@ -26,7 +26,7 @@ public enum Alliance {
             return whitePlayer;
         }
     },
-    BLACK {
+    BLACK("b") {
         @Override
         public int getDirection() {
             return 1;
@@ -47,6 +47,16 @@ public enum Alliance {
             return blackPlayer;
         }
     };
+
+    private String color;
+    Alliance(final String color) {
+        this.color = color;
+    }
+
+    @Override
+    public String toString(){
+        return this.color;
+    }
 
     public abstract int getDirection();
     public abstract boolean isBlack();

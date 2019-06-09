@@ -7,9 +7,10 @@ import com.engine.pieces.Rook;
 import static com.engine.board.Board.*;
 
 public abstract class Move {
-    final Board board;
-    final Piece movedPiece;
-    final int destinationCoordinate;
+    protected final Board board;
+    protected final Piece movedPiece;
+    protected final int destinationCoordinate;
+    protected final boolean isFirstMove;
 
     public static final Move NULL_MOVE = new NullMove();
 
@@ -17,6 +18,14 @@ public abstract class Move {
         this.board = board;
         this.movedPiece = movedPiece;
         this.destinationCoordinate = destinationCoordinate;
+        this.isFirstMove = movedPiece.isFirstMove();
+    }
+
+    private Move(final Board board, final int destinationCoordinate) {
+        this.board = board;
+        this.destinationCoordinate = destinationCoordinate;
+        this.movedPiece = null;
+        this.isFirstMove = false;
     }
 
     public int getCurrentCoordinate() {
@@ -52,8 +61,9 @@ public abstract class Move {
             return false;
         }
         final Move otherMove = (Move) other;
-        return this.movedPiece == otherMove.getMovedPiece() &&
-                this.destinationCoordinate == otherMove.getDestinationCoordinate();
+        return getCurrentCoordinate() == otherMove.getCurrentCoordinate() &&
+                this.destinationCoordinate == otherMove.getDestinationCoordinate() &&
+                this.movedPiece.equals(otherMove.getMovedPiece());
     }
 
     @Override
@@ -62,6 +72,8 @@ public abstract class Move {
         int result = 1;
         result = prime * result + this.destinationCoordinate;
         result = prime * result + this.getMovedPiece().hashCode();
+        result = prime * result + this.movedPiece.getPiecePosition();
+        //result = result + (isFirstMove ? 1 : 0);
         return result;
     }
 
@@ -78,12 +90,11 @@ public abstract class Move {
     public Board execute() {
         final Builder Builder = new Builder();
         for(final Piece piece : this.board.getCurrentPlayer().getActivePieces()) {
-            //TODO hashcode and equals for pieces
             if(!this.movedPiece.equals(piece)) {
                 Builder.setPiece(piece);
             }
         }
-        for(final Piece piece: this.board.getCurrentPlayer().getOpponent().getActivePieces()) {
+        for(final Piece piece : this.board.getCurrentPlayer().getOpponent().getActivePieces()) {
             Builder.setPiece(piece);
         }
         //move the movedPiece the imgBoard
@@ -92,9 +103,29 @@ public abstract class Move {
         return Builder.build();
     }
 
+    /*String disambiguationFile() {
+        for(final Move move : this.board.getCurrentPlayer().getLegalMoves()) {
+            if(move.getDestinationCoordinate() == this.destinationCoordinate && !this.equals(move) &&
+                    this.movedPiece.getPieceType().equals(move.getMovedPiece().getPieceType())) {
+                return BoardUtils.INSTANCE.getPositionAtCoordinate(this.movedPiece.getPiecePosition()).substring(0, 1);
+            }
+        }
+        return "";
+    }*/
+
     public static final class MajorMove extends Move {
         public MajorMove(final Board board, final Piece movedPiece, final int destinationCoordinate) {
             super(board, movedPiece, destinationCoordinate);
+        }
+
+        @Override
+        public boolean equals(final Object other) {
+            return this == other || other instanceof MajorMove && super.equals(other);
+        }
+
+        @Override
+        public String toString() {
+            return movedPiece.getPieceType().toString() + movedPiece.getPieceAlliance().toString();
         }
     }
 
@@ -250,7 +281,7 @@ public abstract class Move {
 
     public static final class NullMove extends Move {
         public NullMove() {
-            super(null, null, -1);
+            super(null, -1);
         }
 
         @Override

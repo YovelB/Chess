@@ -32,8 +32,7 @@ public class BlackPlayer extends Player {
 
     @Override
     public Player getOpponent() {
-        return null;
-        //return this.board.getWhitePlayer();
+        return this.board.getWhitePlayer();
     }
 
     @Override
@@ -57,8 +56,7 @@ public class BlackPlayer extends Player {
                 final Tile rookTile = this.board.getTile(0);
                 if(rookTile.isTileOccupied() && rookTile.getPiece().getPieceType().isRook() && rookTile.getPiece().isFirstMove()) {
                     if(Player.calculateAttackOnTile(3, opponentLegals).isEmpty() &&
-                            Player.calculateAttackOnTile(2, opponentLegals).isEmpty() &&
-                            Player.calculateAttackOnTile(1, opponentLegals).isEmpty())
+                            Player.calculateAttackOnTile(2, opponentLegals).isEmpty())
                         //TODO add queen side CASTLEMOVE!
                         kingCastles.add(new QueenSideCastleMove(this.board, this.playerKing,
                                 2, (Rook) rookTile.getPiece(), 3));

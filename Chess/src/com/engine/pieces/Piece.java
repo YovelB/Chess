@@ -15,12 +15,12 @@ public abstract class Piece {
     private final int cachedHasCode;
 
 
-    Piece(final int piecePosition, final Alliance pieceAlliance, final PieceType pieceType) {
+    Piece(final int piecePosition, final Alliance pieceAlliance, final PieceType pieceType, final boolean isFirstMove) {
         this.pieceType = pieceType;
         this.piecePosition = piecePosition;
         this.pieceAlliance = pieceAlliance;
         //TODO more work here!!!
-        this.isFirstMove = false;
+        this.isFirstMove = isFirstMove;
         this.cachedHasCode = computeHashCode();
     }
 
@@ -79,6 +79,10 @@ public abstract class Piece {
 
     public boolean isFirstMove() {
         return this.isFirstMove;
+    }
+
+    public int getPieceValue() {
+        return this.pieceType.getPieceValue();
     }
 
     //Each Piece has this func so each piece has it's list of legal moves it can make

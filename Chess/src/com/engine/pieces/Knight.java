@@ -14,9 +14,8 @@ import java.util.List;
 import static com.engine.board.Move.*;
 
 public class Knight extends Piece {
-
     // offsets for knight with the perspective of its position
-    private static final int[] CANDIDATE_MOVE_COORDINATE = {-17, -15, -10, -6, 6, 10, -15, -17};
+    private static final int[] CANDIDATE_MOVE_COORDINATE = {-17, -15, -10, -6, 6, 10, 15, 17};
 
     public Knight(final int piecePosition, final Alliance pieceAlliance) {
         super(piecePosition, pieceAlliance, PieceType.KNIGHT, true);
@@ -55,7 +54,7 @@ public class Knight extends Piece {
                 } else {
                     final Piece pieceAtDestination = candidateDestinationTile.getPiece();
                     if (this.getPieceAlliance() != pieceAtDestination.getPieceAlliance()) { // new Move if on the destination Tile there is an enemy
-                        legalMoves.add(new AttackMove(board, this, candidateDestinationCoordinate, pieceAtDestination));
+                        legalMoves.add(new MajorAttackMove(board, this, candidateDestinationCoordinate, pieceAtDestination));
                     }
                 }
             }
@@ -83,7 +82,7 @@ public class Knight extends Piece {
     }
 
     private static boolean isSeventhColumnExclusion(final int currentPortion, final int candidateOffset) {
-        return BoardUtils.SEVENTH_FILE[currentPortion] && (candidateOffset == -6 || candidateOffset == -10);
+        return BoardUtils.SEVENTH_FILE[currentPortion] && (candidateOffset == -6 || candidateOffset == 10);
     }
 
     private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {

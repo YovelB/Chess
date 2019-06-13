@@ -14,7 +14,6 @@ import java.util.*;
  * Board class that represents the gameBoard using a static Builder class
  */
 public class Board {
-
     private final List<Tile> gameBoard;
     private final Collection<Piece> whitePieces;
     private final Collection<Piece> blackPieces;
@@ -22,6 +21,7 @@ public class Board {
     private final WhitePlayer whitePlayer;
     private final BlackPlayer blackPlayer;
     private final Player currentPlayer;
+    private final Pawn enPassantPawn;
 
     private Board(final Builder builder) {
         this.gameBoard = createGameBoard(builder);
@@ -32,6 +32,7 @@ public class Board {
         this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
         this.blackPlayer = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
         this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.whitePlayer, this.blackPlayer);
+        this.enPassantPawn = builder.enPassantPawn;
     }
 
     public Tile getTile (final int tileCoordinate) {
@@ -48,6 +49,10 @@ public class Board {
 
     public Player getCurrentPlayer() {
         return this.currentPlayer;
+    }
+
+    public Pawn getEnPassantPawn() {
+        return this.enPassantPawn;
     }
 
     public Collection<Piece> getBlackPieces() {
@@ -73,7 +78,7 @@ public class Board {
         return ImmutableList.copyOf(legalMoves);
     }
 
-    public Iterable<Move> getAllLegalMoves() {
+    Iterable<Move> getAllLegalMoves() {
         return Iterables.unmodifiableIterable(Iterables.concat(
                 this.whitePlayer.getLegalMoves(), this.blackPlayer.getLegalMoves()));
     }
@@ -115,7 +120,7 @@ public class Board {
      * @param builder is for accessing boardConfig
      * @return a none changeable list of tiles
      */
-    public static List<Tile> createGameBoard(final Builder builder) {
+    private static List<Tile> createGameBoard(final Builder builder) {
         final Tile[] tiles = new Tile[BoardUtils.NUM_TILES];
         for(int i = 0; i < BoardUtils.NUM_TILES; i++) {
             tiles[i] = Tile.createTile(i, builder.boardConfig.get(i));
@@ -170,16 +175,15 @@ public class Board {
         return builder.build();
     }
 
-
     /**
      * Using a static Builder class for the complex class Board so it will be easier to manage
      */
     public static class Builder {
         Map<Integer, Piece> boardConfig;
         Alliance nextMoveMaker;
-        Pawn EnPassantPawn;
+        Pawn enPassantPawn;
 
-        public Builder() {
+        Builder() {
             this.boardConfig = new HashMap<>();
         }
 
@@ -187,18 +191,18 @@ public class Board {
             this.boardConfig.put(piece.getPiecePosition(), piece);
             return this;
         }
-
-        public Builder setMoveMaker(final Alliance nextMoveMaker) {
+        //using the builder pattern
+        Builder setMoveMaker(final Alliance nextMoveMaker) {
             this.nextMoveMaker = nextMoveMaker;
             return this;
         }
 
-        public Board build() {
+        Board build() {
             return new Board(this);
         }
 
-        public void setEnPassantPawn(Pawn EnPassantPawn) {
-            this.EnPassantPawn = EnPassantPawn;
+        void setEnPassantPawn(Pawn EnPassantPawn) {
+            this.enPassantPawn = EnPassantPawn;
         }
     }
 }

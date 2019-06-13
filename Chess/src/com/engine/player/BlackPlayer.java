@@ -57,7 +57,6 @@ public class BlackPlayer extends Player {
                 if(rookTile.isTileOccupied() && rookTile.getPiece().getPieceType().isRook() && rookTile.getPiece().isFirstMove()) {
                     if(Player.calculateAttackOnTile(3, opponentLegals).isEmpty() &&
                             Player.calculateAttackOnTile(2, opponentLegals).isEmpty())
-                        //TODO add queen side CASTLEMOVE!
                         kingCastles.add(new QueenSideCastleMove(this.board, this.playerKing,
                                 2, (Rook) rookTile.getPiece(), 3));
                 }

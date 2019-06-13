@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.engine.board.Move.AttackMove;
+import static com.engine.board.Move.*;
 import static com.engine.board.Move.MajorMove;
 
 public class Bishop extends Piece {
@@ -59,7 +59,7 @@ public class Bishop extends Piece {
                         final Piece pieceAtDestination = candidateDestinationTile.getPiece();
                         final Alliance pieceAlliance = pieceAtDestination.getPieceAlliance();
                         if (this.getPieceAlliance() != pieceAlliance) { // new Move if on the destination Tile there is an enemy
-                            legalMoves.add(new AttackMove(board, this,
+                            legalMoves.add(new MajorAttackMove(board, this,
                                     candidateDestinationCoordinate, pieceAtDestination));
                         }
                         break;

@@ -14,7 +14,6 @@ import java.util.List;
 import static com.engine.board.Move.*;
 
 public class King extends Piece {
-
     private final static int[] CANDIDATE_MOVE_COORDINATE = {-9, -8, -7, -1, 1, 7, 8, 9};
 
     public King(final int piecePosition, final Alliance pieceAlliance) {
@@ -55,7 +54,7 @@ public class King extends Piece {
                 } else {
                     final Piece pieceAtDestination = candidateDestinationTile.getPiece();
                     if (this.getPieceAlliance() != pieceAtDestination.getPieceAlliance()) { // new Move if on the destination Tile there is an enemy
-                        legalMoves.add(new AttackMove(board, this, candidateDestinationCoordinate, pieceAtDestination));
+                        legalMoves.add(new MajorAttackMove(board, this, candidateDestinationCoordinate, pieceAtDestination));
                     }
                 }
             }

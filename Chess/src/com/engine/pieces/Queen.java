@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static com.engine.board.Move.*;
+
 public class Queen extends Piece{
 
     private final static int[] CANDIDATE_MOVE_VECTOR_COORDINATE = {-9, -8, -7, -1, 1, 7, 8, 9};
@@ -19,7 +21,7 @@ public class Queen extends Piece{
         super(piecePosition, pieceAlliance, PieceType.QUEEN, true);
     }
 
-    public Queen(final int piecePosition, final Alliance pieceAlliance, final boolean isFirstMove) {
+    Queen(final int piecePosition, final Alliance pieceAlliance, final boolean isFirstMove) {
         super(piecePosition, pieceAlliance, PieceType.QUEEN, isFirstMove);
     }
 
@@ -51,13 +53,13 @@ public class Queen extends Piece{
                 if (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
                     final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
                     if (!candidateDestinationTile.isTileOccupied()) { // new Move if Tile is empty
-                        legalMoves.add(new Move.MajorMove(board, this,
+                        legalMoves.add(new MajorMove(board, this,
                                 candidateDestinationCoordinate));
                     } else {
                         final Piece pieceAtDestination = candidateDestinationTile.getPiece();
                         final Alliance pieceAlliance = pieceAtDestination.getPieceAlliance();
                         if (this.getPieceAlliance() != pieceAlliance) { // new Move if on the destination Tile there is an enemy
-                            legalMoves.add(new Move.AttackMove(board, this,
+                            legalMoves.add(new MajorAttackMove(board, this,
                                     candidateDestinationCoordinate, pieceAtDestination));
                         }
                         break;

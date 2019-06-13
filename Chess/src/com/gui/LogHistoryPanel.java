@@ -2,56 +2,49 @@ package com.gui;
 
 import com.engine.board.Board;
 import com.engine.board.Move;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static com.gui.Controller.*;
 
 public class LogHistoryPanel extends Pane {
-    private final DateModel model;
-    private ScrollPane scrollPane;
-
+    private TableView table;
+    private String whiteMove = null;
+    private int currentRow = 0;
     public LogHistoryPanel() {
-        this.model = new DateModel();
-        TableView table = new TableView(); //model
-        table.setPrefHeight(15);
+
+        table = new TableView();
+        table.setPrefSize(175, 550);
         table.setEditable(false);
-        this.scrollPane = new ScrollPane();
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setPrefSize(100, 400);
-        scrollPane.setContent(table);
+
+        TableColumn<String, Row> whiteCol = new TableColumn<>("White");
+        whiteCol.setCellValueFactory(new PropertyValueFactory<>("whiteMove"));
+        whiteCol.setResizable(false);
+        TableColumn<String, Row> blackCol = new TableColumn<>("Black");
+        blackCol.setCellValueFactory(new PropertyValueFactory<>("blackMove"));
+        blackCol.setResizable(false);
+        table.getColumns().addAll(whiteCol, blackCol);
+        this.getChildren().add(table);
+
     }
 
-    void add(final Board board, final MoveLog moveLog) {
-        int currentRow = 0;
-        this.model.clear();
-        for(final Move move : moveLog.getMoves()) {
-            final String moveText = move.toString();
-            if(move.getMovedPiece().getPieceAlliance().isWhite()) {
-                //this.model.setValueAt(moveText, currentRow, 0);
-            } else if(move.getMovedPiece().getPieceAlliance().isBlack()) {
-                //this.model.setValueAt(moveText, currentRow, 1);
-                currentRow++;
-            }
+    void add(final Board board, final Move move) {
+        final String moveText = move.toString() + calculateCheckAndCheckMateHash(board);
+        if(move.getMovedPiece().getPieceAlliance().isWhite()) {
+            whiteMove = moveText;
+            table.getItems().add(new Row(moveText, ""));
+        } else if(move.getMovedPiece().getPieceAlliance().isBlack())
+        {
+            table.getItems().set(currentRow, new Row(whiteMove, moveText));
+            currentRow++;
         }
-
-        if(moveLog.getMoves().size() > 0) {
-            final Move lastMove = moveLog.getMoves().get(moveLog.size() - 1);
-            final String moveText = lastMove.toString();
-
-            if(lastMove.getMovedPiece().getPieceAlliance().isWhite()) {
-                //this.model.setValueAt(moveText + calculateCheckAndCheckMateHash(board), currentRow - 1, 1);
-            }
-
-        }
-        /*final ScrollBar vertical = scrollPane.getVerticalScrollBar();
-        vertical.setValue(vertical.getMax());*/
     }
 
     private String calculateCheckAndCheckMateHash(final Board board) {
@@ -63,76 +56,13 @@ public class LogHistoryPanel extends Pane {
         return "";
     }
 
-    private static class DateModel {
-        private final List<Row> values;
-        private static final String[] NAMES = {"White", "Black"};
-
-        DateModel() {
-            this.values = new ArrayList<>();
-        }
-
-        public void clear() {
-            this.values.clear();
-            //SetRowConut(0);
-        }
-
-        /*@Override
-        public int getRowCount() {
-            if(this.values == null) {
-                return 0;
-            }
-            return this.values.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return NAMES.length;
-        }
-
-        @Override
-        public Object getValueAt(final int row, final int column) {
-            final Row currentRow = this.values.get(row);
-            if(column == 0) {
-                return currentRow.getWhiteMove();
-            } else if(column == 1) {
-                return currentRow.getBlackMove();
-            }
-            return null;
-        }
-
-        @Override
-        public void setValueAt(final Object value, final int row, final int column) {
-            final Row currentRow;
-            if(this.values.size() <= row) {
-                currentRow = new Row();
-                this.values.add(currentRow);
-            } else {
-                currentRow = this.values.get(row);
-            }
-            if(column == 0) {
-                currentRow.setWhiteMove((String)value);
-            } else if(column == 1) {
-                currentRow.setBlackMove((String)value);
-                fireTableCellUpdated(row, column);
-            }
-        }
-
-        @Override
-        public Class<?> getColumnClass(final int column) {
-            return Move.class;
-        }
-
-        @Override
-        public String getColumnName(final int column) {
-            return NAMES[column];
-        }*/
-    }
-
-    private static class Row {
+    public static class Row {
         private String whiteMove;
         private String blackMove;
 
-        Row() {
+        public Row(final String whiteMove, final String blackMove) {
+            this.whiteMove = whiteMove;
+            this.blackMove = blackMove;
         }
 
         public String getWhiteMove() {

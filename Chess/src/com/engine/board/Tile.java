@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableMap;
  */
 
 public abstract class Tile {
-    protected final int tileCoordinate;
+    private final int tileCoordinate;
     private static final Map<Integer, EmptyTile> EMPTY_TILES_CACHE = createAllPossibleEmptyTiles();
 
     private Tile(final int tileCoordinate) {
@@ -33,7 +33,7 @@ public abstract class Tile {
         return ImmutableMap.copyOf(emptyTileMap);
     }
 
-    public static Tile createTile (final int tileCoordinate, final Piece piece) {
+    static Tile createTile(final int tileCoordinate, final Piece piece) {
         return (piece != null) ? new OccupiedTile(tileCoordinate, piece) : EMPTY_TILES_CACHE.get(tileCoordinate);
     }
 

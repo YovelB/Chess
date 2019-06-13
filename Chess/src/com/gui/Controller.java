@@ -24,30 +24,31 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.*;
 
-
 /**
  * Controller class that Controls the Board of the game (GUI Implantation)
  */
 
 public class Controller implements Initializable {
 
-    private static final int BOARD_PANEL_WIDTH = 600;
-    private static final int BOARD_PANEL_HEIGHT = 500;
-    private static final int TILE_PANEL_WIDTH = 75;
-    private static final int TILE_PANEL_HEIGHT = 65;
+    private static final int BOARD_PANEL_WIDTH = 650;
+    private static final int BOARD_PANEL_HEIGHT = 550;
+    private static final double TILE_PANEL_WIDTH = 81.25;
+    private static final double TILE_PANEL_HEIGHT = 68.75;
     static final String RESOURCES_PATH = "Resources\\";
 
     @FXML
     private BorderPane borderPane;
 
+    private LogHistoryPanel logHistoryPanel;
+    private TakenPiecesPanel takenPiecesPanel;
+    private BoardPanel chessBoard;
+    private MoveLog moveLog;
 
-    Board gameBoard = Board.createStandardBoard();
+    private Board gameBoard = Board.createStandardBoard();
     private Tile sourceTile;
     private Tile targetTile;
     private Piece movedPiece;
-    private BoardPanel chessBoard;
     private BoardDirection boardDirection;
-
     private boolean highlightLegalMoves;
 
     /**
@@ -56,19 +57,24 @@ public class Controller implements Initializable {
      * The method iterates on all the GridPane nodes and creating new Panes
      * with different colors(BLACK, WHITE - DARK BROWN, WHITE BROWN)
      * On each Pane we create a ImageView control that has an Image of EmptyPiece(no Image, transparent) or a piece image
-     * @param url
-     * @param resourceBundle
+     * @param url add text here
+     * @param resourceBundle add text here
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        this.moveLog = new MoveLog();
+
         boardDirection = BoardDirection.NORMAL;
         highlightLegalMoves = false;
 
         MenuBar menuBar = createTableMenuBar();
         borderPane.setTop(menuBar);
 
-        /*TakenPiecesPanel logPanel = new TakenPiecesPanel();
-        borderPane.setLeft(logPanel);*/
+        logHistoryPanel = new LogHistoryPanel();
+        borderPane.setRight(logHistoryPanel);
+
+        takenPiecesPanel = new TakenPiecesPanel();
+        borderPane.setLeft(takenPiecesPanel);
 
         chessBoard = new BoardPanel();
         borderPane.setCenter(chessBoard);
@@ -145,7 +151,7 @@ public class Controller implements Initializable {
     private class BoardPanel extends GridPane {
         final List<TilePanel> boardTiles;
 
-        public BoardPanel() {
+        BoardPanel() {
             this.setPrefSize(BOARD_PANEL_WIDTH, BOARD_PANEL_HEIGHT);
             this.boardTiles = new ArrayList<>(BoardUtils.NUM_TILES);
             for(int i = 0; i < BoardUtils.NUM_TILES_PER_ROW; i++) {
@@ -158,7 +164,7 @@ public class Controller implements Initializable {
             }
         }
 
-        public void drawBoard(final Board board) {
+        void drawBoard(final Board board) {
             this.getChildren().clear();
             for(int i = 0; i < BoardUtils.NUM_TILES_PER_ROW; i++) {
                 for(int j = 0, tileId; j < BoardUtils.NUM_TILES_PER_ROW; j++) {
@@ -181,15 +187,15 @@ public class Controller implements Initializable {
             return this.moves;
         }
 
-        public void addMove(final Move move) {
+        void addMove(final Move move) {
             this.moves.add(move);
         }
 
-        public int size() {
+        int size() {
             return this.moves.size();
         }
 
-        public void clear() {
+        void clear() {
             this.moves.clear();
         }
 
@@ -210,47 +216,44 @@ public class Controller implements Initializable {
             this.tileId = tileId;
             assignTileColor();
             assignTilePieceIcon(gameBoard);
-            EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
-
-                @Override
-                public void handle(final MouseEvent mouseEvent) {
-                    if(mouseEvent.getButton() == MouseButton.SECONDARY) {
+            EventHandler<MouseEvent> eventHandler = mouseEvent -> {
+                if(mouseEvent.getButton() == MouseButton.SECONDARY) {
+                    sourceTile = null;
+                    targetTile = null;
+                    movedPiece = null;
+                } else if(mouseEvent.getButton() == MouseButton.PRIMARY) {
+                    if(sourceTile == null) {
+                        //first click
+                        sourceTile = gameBoard.getTile(tileId);
+                        movedPiece = sourceTile.getPiece();
+                        if(movedPiece == null) {
+                            sourceTile = null;
+                        }
+                    } else {
+                        // second click
+                        targetTile = gameBoard.getTile(tileId);
+                        final Move move = Move.MoveFactory.createMove(gameBoard, sourceTile.getTileCoordinate(),
+                                targetTile.getTileCoordinate());
+                        final MoveTransition transition = gameBoard.getCurrentPlayer().makeMove(move);
+                        if(transition.getMoveStatus().isDone()) {
+                            gameBoard = transition.getTransitionBoard();
+                            moveLog.addMove(move);
+                            logHistoryPanel.add(gameBoard, move);
+                        }
                         sourceTile = null;
                         targetTile = null;
                         movedPiece = null;
-                    } else if(mouseEvent.getButton() == MouseButton.PRIMARY) {
-                        if(sourceTile == null) {
-                            //first click
-                            sourceTile = gameBoard.getTile(tileId);
-                            movedPiece = sourceTile.getPiece();
-                            if(movedPiece == null) {
-                                sourceTile = null;
-                            }
-                        } else {
-                            // second click
-                            targetTile = gameBoard.getTile(tileId);
-                            final Move move = Move.MoveFactory.createMove(gameBoard, sourceTile.getTileCoordinate(),
-                                    targetTile.getTileCoordinate());
-                            final MoveTransition transition = gameBoard.getCurrentPlayer().makeMove(move);
-                            if(transition.getMoveStatus().isDone()) {
-                                gameBoard = transition.getTransitionBoard();
-                                System.out.println("piece " + movedPiece + " Moved from " + sourceTile.getTileCoordinate()  +
-                                        " to " + targetTile.getTileCoordinate());
-                                //TODO add the move that was made to the move log
-                            }
-                            sourceTile = null;
-                            targetTile = null;
-                            movedPiece = null;
-                        }
-                        Platform.runLater(() -> boardPanel.drawBoard(gameBoard));
                     }
-                    System.out.println("I clicked tileId =  " + (tileId+1));
+                    Platform.runLater(() -> {
+                        takenPiecesPanel.addTakenPiece(moveLog);
+                        boardPanel.drawBoard(gameBoard);
+                    });
                 }
             };
             this.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
         }
 
-        public void drawTile(final Board board) {
+        void drawTile(final Board board) {
             assignTileColor();
             assignTilePieceIcon(board);
             highlightLegals(board);
@@ -286,13 +289,14 @@ public class Controller implements Initializable {
                         ImageView tilePieceIcon = null;
                         try {
                             tilePieceIcon = new ImageView(new Image(new FileInputStream(
-                                    RESOURCES_PATH + "green_dot.png")));
+                                    RESOURCES_PATH + "HighlightedTile.png")));
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         }
                         if (tilePieceIcon != null) {
-                            tilePieceIcon.setFitWidth(20);
-                            tilePieceIcon.setFitHeight(20);
+                            tilePieceIcon.setFitWidth(TILE_PANEL_WIDTH);
+                            tilePieceIcon.setFitHeight(TILE_PANEL_HEIGHT);
+
                             this.getChildren().add(tilePieceIcon);
                         }
                     }

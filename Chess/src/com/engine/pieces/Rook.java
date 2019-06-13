@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class Rook extends Piece {
+import static com.engine.board.Move.*;
 
+public class Rook extends Piece {
     private final static int[] CANDIDATE_MOVE_VECTOR_COORDINATE = {-8, -1, 1, 8};
 
     public Rook(final int piecePosition, final Alliance pieceAlliance) {
@@ -51,13 +52,13 @@ public class Rook extends Piece {
                 if (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
                     final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
                     if (!candidateDestinationTile.isTileOccupied()) { // new Move if Tile is empty
-                        legalMoves.add(new Move.MajorMove(board, this,
+                        legalMoves.add(new MajorMove(board, this,
                                 candidateDestinationCoordinate));
                     } else {
                         final Piece pieceAtDestination = candidateDestinationTile.getPiece();
                         final Alliance pieceAlliance = pieceAtDestination.getPieceAlliance();
                         if (this.getPieceAlliance() != pieceAlliance) { // new Move if on the destination Tile there is an enemy
-                            legalMoves.add(new Move.AttackMove(board, this,
+                            legalMoves.add(new MajorAttackMove(board, this,
                                     candidateDestinationCoordinate, pieceAtDestination));
                         }
                         break;

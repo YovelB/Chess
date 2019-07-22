@@ -4,7 +4,6 @@ import com.engine.board.Board;
 import com.engine.board.Move;
 
 public class MoveTransition {
-
     private final Board transitionBoard;
     private final Move move;
     private final MoveStatus moveStatus;

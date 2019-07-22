@@ -209,8 +209,7 @@
     <path refid="library.lib.classpath"/>
     <path refid="library.src.classpath"/>
   </path>
-  
-  
+
   <patternset id="excluded.from.module.chess">
     <patternset refid="ignored.files"/>
   </patternset>

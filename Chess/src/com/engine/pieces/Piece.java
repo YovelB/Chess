@@ -28,11 +28,11 @@ public abstract class Piece {
      * @return the Piece(class or sub class) hashCode
      */
     private int computeHashCode() {
-        int resualt = this.piecePosition;
-        resualt = 31 * resualt + this.pieceAlliance.hashCode();
-        resualt = 31 * resualt + this.pieceType.hashCode();
-        resualt = 31 * resualt + (this.isFirstMove ? 1 : 0);
-        return resualt;
+        int result = this.piecePosition;
+        result = 31 * result + this.pieceAlliance.hashCode();
+        result = 31 * result + this.pieceType.hashCode();
+        result = 31 * result + (this.isFirstMove ? 1 : 0);
+        return result;
     }
 
     /**

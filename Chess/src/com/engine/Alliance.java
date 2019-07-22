@@ -69,7 +69,8 @@ public enum Alliance {
         }
     };
 
-    private String color;
+    private final String color;
+
     Alliance(final String color) {
         this.color = color;
     }
@@ -84,6 +85,5 @@ public enum Alliance {
     public abstract boolean isBlack();
     public abstract boolean isWhite();
     public abstract boolean isPawnPromotionSquare(final int position);
-
     public abstract Player choosePlayer(final WhitePlayer whitePlayer, final BlackPlayer blackPlayer);
 }

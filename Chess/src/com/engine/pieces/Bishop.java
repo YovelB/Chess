@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.engine.board.Move.*;
-import static com.engine.board.Move.MajorMove;
 
 public class Bishop extends Piece {
     private final static int[] CANDIDATE_MOVE_VECTOR_COORDINATE = {-9, -7, 7, 9};
@@ -23,6 +22,14 @@ public class Bishop extends Piece {
 
     public Bishop(final int piecePosition, final Alliance pieceAlliance, final boolean isFirstMove) {
         super(piecePosition, pieceAlliance, PieceType.BISHOP, isFirstMove);
+    }
+
+    private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
+        return BoardUtils.FIRST_FILE[currentPosition] && (candidateOffset == -9 || candidateOffset == 7);
+    }
+
+    private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
+        return BoardUtils.EIGHTH_FILE[currentPosition] && (candidateOffset == -7 || candidateOffset == 9);
     }
 
     /**
@@ -40,7 +47,7 @@ public class Bishop extends Piece {
      * @return the list of legalMoves that cannot be change hench it is "final" and return as "Immutable.copyOf(legalMoves)"
      */
     @Override
-    public Collection<Move> calculateLegalMoves(Board board) {
+    public Collection<Move> calculateLegalMoves(final Board board) {
         final List<Move> legalMoves = new ArrayList<>();
         for (final int currentCandidateOffset : CANDIDATE_MOVE_VECTOR_COORDINATE) {
             int candidateDestinationCoordinate = this.getPiecePosition();
@@ -78,13 +85,5 @@ public class Bishop extends Piece {
     @Override
     public String toString() {
         return PieceType.BISHOP.toString();
-    }
-
-    private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.FIRST_FILE[currentPosition] && (candidateOffset == -9 || candidateOffset == 7);
-    }
-
-    private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.EIGHTH_FILE[currentPosition] && (candidateOffset == -7 || candidateOffset == 9);
     }
 }

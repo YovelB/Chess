@@ -1,20 +1,14 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="Chess">
+  <artifact type="jar" name="Chess">
     <output-path>$PROJECT_DIR$/out/artifacts/Chess</output-path>
-    <properties id="javafx-properties">
-      <options>
-        <option name="appClass" value="com.engine.Main" />
-        <option name="description" value="" />
-        <option name="htmlPlaceholderId" value="" />
-        <option name="title" value="" />
-        <option name="vendor" value="" />
-        <option name="version" value="" />
-      </options>
-    </properties>
-    <root id="root">
-      <element id="archive" name="Chess.jar">
-        <element id="module-output" name="Chess" />
-      </element>
+    <root id="archive" name="Chess.jar">
+      <element id="module-output" name="Chess" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../Libraries/guava-23.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../Libraries/bluecove-2.1.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-api/5.5.0-RC1/junit-jupiter-api-5.5.0-RC1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apiguardian/apiguardian-api/1.1.0/apiguardian-api-1.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/junit/platform/junit-platform-commons/1.5.0-RC1/junit-platform-commons-1.5.0-RC1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

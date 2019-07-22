@@ -24,6 +24,14 @@ public class Rook extends Piece {
         super(piecePosition, pieceAlliance, PieceType.ROOK,isFirstMove);
     }
 
+    private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
+        return BoardUtils.FIRST_FILE[currentPosition] && (candidateOffset == -1);
+    }
+
+    private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
+        return BoardUtils.EIGHTH_FILE[currentPosition] && (candidateOffset == 1);
+    }
+
     /**
      * Calculates all the legal(available) moves of the Rook and return it as a list
      *
@@ -39,7 +47,7 @@ public class Rook extends Piece {
      * @return the list of legalMoves that cannot be change hench it is "final" and return as "Immutable.copyOf(legalMoves)"
      */
     @Override
-    public Collection<Move> calculateLegalMoves(Board board) {
+    public Collection<Move> calculateLegalMoves(final Board board) {
         final List<Move> legalMoves = new ArrayList<>();
         for (final int currentCandidateOffset : CANDIDATE_MOVE_VECTOR_COORDINATE) {
             int candidateDestinationCoordinate = this.getPiecePosition();
@@ -77,12 +85,5 @@ public class Rook extends Piece {
     @Override
     public String toString() {
         return PieceType.ROOK.toString();
-    }
-
-    private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.FIRST_FILE[currentPosition] && (candidateOffset == -1);
-    }
-    private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.EIGHTH_FILE[currentPosition] && (candidateOffset == 1);
     }
 }

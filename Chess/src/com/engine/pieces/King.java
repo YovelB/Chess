@@ -24,6 +24,16 @@ public class King extends Piece {
         super(piecePosition, pieceAlliance, PieceType.KING, isFirstMove);
     }
 
+    private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
+        return BoardUtils.FIRST_FILE[currentPosition] && (candidateOffset == -9 || candidateOffset == -1 ||
+                candidateOffset == 7);
+    }
+
+    private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
+        return BoardUtils.EIGHTH_FILE[currentPosition] && (candidateOffset == -7 || candidateOffset == 1 ||
+                candidateOffset == 9);
+    }
+
     /**
      * Calculates all the legal(available) moves of the King and return it as a list
      * <p>
@@ -39,21 +49,21 @@ public class King extends Piece {
      * @return the list of legalMoves that cannot be change hench it is "final" and return as "Immutable.copyOf(legalMoves)"
      */
     @Override
-    public Collection<Move> calculateLegalMoves(Board board) {
+    public Collection<Move> calculateLegalMoves(final Board board) {
         final List<Move> legalMoves = new ArrayList<>();
         for(final int currentCandidateOffset : CANDIDATE_MOVE_COORDINATE) {
             final int candidateDestinationCoordinate = this.getPiecePosition() + currentCandidateOffset;
-            if(isFirstColumnExclusion(this.getPiecePosition(), currentCandidateOffset) ||
-                    isEighthColumnExclusion(this.getPiecePosition(), currentCandidateOffset)) {
-                continue;
-            }
             if(BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) {
+                if(isFirstColumnExclusion(this.getPiecePosition(), currentCandidateOffset) ||
+                        isEighthColumnExclusion(this.getPiecePosition(), currentCandidateOffset)) {
+                    continue;
+                }
                 final Tile candidateDestinationTile = board.getTile(candidateDestinationCoordinate);
-                if (!candidateDestinationTile.isTileOccupied()) { // new Move if Tile is empty
+                if(!candidateDestinationTile.isTileOccupied()) { // new Move if Tile is empty
                     legalMoves.add(new MajorMove(board, this, candidateDestinationCoordinate));
                 } else {
                     final Piece pieceAtDestination = candidateDestinationTile.getPiece();
-                    if (this.getPieceAlliance() != pieceAtDestination.getPieceAlliance()) { // new Move if on the destination Tile there is an enemy
+                    if(this.getPieceAlliance() != pieceAtDestination.getPieceAlliance()) { // new Move if on the destination Tile there is an enemy
                         legalMoves.add(new MajorAttackMove(board, this, candidateDestinationCoordinate, pieceAtDestination));
                     }
                 }
@@ -70,15 +80,5 @@ public class King extends Piece {
     @Override
     public String toString() {
         return PieceType.KING.toString();
-    }
-
-    private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.FIRST_FILE[currentPosition] && (candidateOffset == -9 || candidateOffset == -1 ||
-                candidateOffset == 7);
-    }
-
-    private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
-        return BoardUtils.EIGHTH_FILE[currentPosition] && (candidateOffset == -7 || candidateOffset == 1 ||
-                candidateOffset == 9);
     }
 }

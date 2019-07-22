@@ -27,6 +27,16 @@ public abstract class Player {
         this.isInCheck = !calculateAttackOnTile(this.playerKing.getPiecePosition(), opponentMoves).isEmpty();
     }
 
+    static Collection<Move> calculateAttackOnTile(final int piecePosition, final Collection<Move> moves) {
+        final List<Move> attackTileMoves = new ArrayList<>();
+        for(final Move candidateTileMove : moves) {
+            if(piecePosition == candidateTileMove.getDestinationCoordinate()) {
+                attackTileMoves.add(candidateTileMove);
+            }
+        }
+        return ImmutableList.copyOf(attackTileMoves);
+    }
+
     private King getPlayerKing() {
         return playerKing;
     }
@@ -94,17 +104,11 @@ public abstract class Player {
     }
 
     public abstract Collection<Piece> getActivePieces();
+
     public abstract Alliance getAlliance();
+
     public abstract Player getOpponent();
+
     protected abstract Collection<Move> calculateKingCastles(final Collection<Move> playerLegals,
                                                              final Collection<Move> opponentLegals);
-    static Collection<Move> calculateAttackOnTile(final int piecePosition, final Collection<Move> moves) {
-        final List<Move> attackTileMoves = new ArrayList<>();
-        for(final Move candidateTileMove : moves) {
-            if(piecePosition == candidateTileMove.getDestinationCoordinate()) {
-                attackTileMoves.add(candidateTileMove);
-            }
-        }
-        return ImmutableList.copyOf(attackTileMoves);
-    }
 }

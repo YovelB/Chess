@@ -2,28 +2,20 @@ package com.gui;
 
 import com.engine.board.Board;
 import com.engine.board.Move;
-import javafx.collections.ObservableList;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 
-import java.util.ArrayList;
-import java.util.List;
+class LogHistoryPanel extends Pane {
+    private final TableView table;
+    private String whiteMove;
+    private int currentRowIndex;
 
-import static com.gui.Controller.*;
-
-public class LogHistoryPanel extends Pane {
-    private TableView table;
-    private String whiteMove = null;
-    private int currentRow = 0;
-    public LogHistoryPanel() {
-
+    LogHistoryPanel() {
         table = new TableView();
         table.setPrefSize(175, 550);
         table.setEditable(false);
-
         TableColumn<String, Row> whiteCol = new TableColumn<>("White");
         whiteCol.setCellValueFactory(new PropertyValueFactory<>("whiteMove"));
         whiteCol.setResizable(false);
@@ -32,18 +24,19 @@ public class LogHistoryPanel extends Pane {
         blackCol.setResizable(false);
         table.getColumns().addAll(whiteCol, blackCol);
         this.getChildren().add(table);
+        whiteMove = "";
+        currentRowIndex = 0;
 
     }
 
-    void add(final Board board, final Move move) {
-        final String moveText = move.toString() + calculateCheckAndCheckMateHash(board);
-        if(move.getMovedPiece().getPieceAlliance().isWhite()) {
+    void draw(final Board board, final Move move) {
+        String moveText = move.toString() + calculateCheckAndCheckMateHash(board);
+        if (move.getMovedPiece().getPieceAlliance().isWhite()) {
             whiteMove = moveText;
             table.getItems().add(new Row(moveText, ""));
-        } else if(move.getMovedPiece().getPieceAlliance().isBlack())
-        {
-            table.getItems().set(currentRow, new Row(whiteMove, moveText));
-            currentRow++;
+        } else if (move.getMovedPiece().getPieceAlliance().isBlack()) {
+            table.getItems().set(currentRowIndex, new Row(whiteMove, moveText));
+            currentRowIndex++;
         }
     }
 
@@ -56,27 +49,34 @@ public class LogHistoryPanel extends Pane {
         return "";
     }
 
+    void clear() {
+        whiteMove = "";
+        this.currentRowIndex = 0;
+        this.table.getItems().clear();
+    }
+
     public static class Row {
         private String whiteMove;
         private String blackMove;
 
-        public Row(final String whiteMove, final String blackMove) {
+        Row(final String whiteMove, final String blackMove) {
             this.whiteMove = whiteMove;
             this.blackMove = blackMove;
         }
 
         public String getWhiteMove() {
-            return this.whiteMove;
+            return whiteMove;
+        }
+
+        public void setWhiteMove(String whiteMove) {
+            this.whiteMove = whiteMove;
         }
 
         public String getBlackMove() {
-            return this.blackMove;
+            return blackMove;
         }
 
-        public void setWhiteMove(final String whiteMove) {
-            this.whiteMove = whiteMove;
-        }
-        public void setBlackMove(final String blackMove) {
+        public void setBlackMove(String blackMove) {
             this.blackMove = blackMove;
         }
     }

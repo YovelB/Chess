@@ -27,73 +27,12 @@ public class Board {
         this.gameBoard = createGameBoard(builder);
         this.whitePieces = calculateActivePieces(this.gameBoard, Alliance.WHITE);
         this.blackPieces = calculateActivePieces(this.gameBoard, Alliance.BLACK);
+        this.enPassantPawn = builder.enPassantPawn;
         final Collection<Move> whiteStandardLegalMoves = calculateLegalMoves(this.whitePieces);
         final Collection<Move> blackStandardLegalMoves = calculateLegalMoves(this.blackPieces);
         this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
         this.blackPlayer = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves);
         this.currentPlayer = builder.nextMoveMaker.choosePlayer(this.whitePlayer, this.blackPlayer);
-        this.enPassantPawn = builder.enPassantPawn;
-    }
-
-    public Tile getTile (final int tileCoordinate) {
-        return gameBoard.get(tileCoordinate);
-    }
-
-    public Player getWhitePlayer() {
-        return this.whitePlayer;
-    }
-
-    public Player getBlackPlayer() {
-        return this.blackPlayer;
-    }
-
-    public Player getCurrentPlayer() {
-        return this.currentPlayer;
-    }
-
-    public Pawn getEnPassantPawn() {
-        return this.enPassantPawn;
-    }
-
-    public Collection<Piece> getBlackPieces() {
-        return this.blackPieces;
-    }
-
-    public Collection<Piece> getWhitePieces() {
-        return this.whitePieces;
-    }
-
-    /**
-     * Creates a list of all possible legal moves for a given collection of pieces we use this func
-     * to calculate all legal moves of the whites pieces and all legal moves of the black pieces
-     * @param pieces for each piece we calculate its legal moves through its function
-     * we implemented in each piece type
-     * @return a none changeable list of legal moves
-     */
-    private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
-        final List<Move> legalMoves = new ArrayList<>();
-        for(final Piece piece : pieces) {
-            legalMoves.addAll(piece.calculateLegalMoves(this));
-        }
-        return ImmutableList.copyOf(legalMoves);
-    }
-
-    Iterable<Move> getAllLegalMoves() {
-        return Iterables.unmodifiableIterable(Iterables.concat(
-                this.whitePlayer.getLegalMoves(), this.blackPlayer.getLegalMoves()));
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sBuilder = new StringBuilder();
-        for(int i = 0; i < BoardUtils.NUM_TILES; i++) {
-            final String tileText = this.gameBoard.get(i).toString();
-            sBuilder.append(String.format("%3s", tileText));
-            if((i + 1) % BoardUtils.NUM_TILES_PER_ROW == 0) {
-                sBuilder.append("\n");
-            }
-        }
-        return sBuilder.toString();
     }
 
     /**
@@ -175,11 +114,72 @@ public class Board {
         return builder.build();
     }
 
+    public Tile getTile (final int tileCoordinate) {
+        return gameBoard.get(tileCoordinate);
+    }
+
+    public Player getWhitePlayer() {
+        return this.whitePlayer;
+    }
+
+    public Player getBlackPlayer() {
+        return this.blackPlayer;
+    }
+
+    public Player getCurrentPlayer() {
+        return this.currentPlayer;
+    }
+
+    public Pawn getEnPassantPawn() {
+        return this.enPassantPawn;
+    }
+
+    public Collection<Piece> getBlackPieces() {
+        return this.blackPieces;
+    }
+
+    public Collection<Piece> getWhitePieces() {
+        return this.whitePieces;
+    }
+
+    /**
+     * Creates a list of all possible legal moves for a given collection of pieces we use this func
+     * to calculate all legal moves of the whites pieces and all legal moves of the black pieces
+     * @param pieces for each piece we calculate its legal moves through its function
+     * we implemented in each piece type
+     * @return a none changeable list of legal moves
+     */
+    private Collection<Move> calculateLegalMoves(final Collection<Piece> pieces) {
+        final List<Move> legalMoves = new ArrayList<>();
+        for(final Piece piece : pieces) {
+            legalMoves.addAll(piece.calculateLegalMoves(this));
+        }
+        return ImmutableList.copyOf(legalMoves);
+    }
+
+    Iterable<Move> getAllLegalMoves() {
+        return Iterables.unmodifiableIterable(Iterables.concat(
+                this.whitePlayer.getLegalMoves(), this.blackPlayer.getLegalMoves()));
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sBuilder = new StringBuilder();
+        for(int i = 0; i < BoardUtils.NUM_TILES; i++) {
+            final String tileText = this.gameBoard.get(i).toString();
+            sBuilder.append(String.format("%3s", tileText));
+            if((i + 1) % BoardUtils.NUM_TILES_PER_ROW == 0) {
+                sBuilder.append("\n");
+            }
+        }
+        return sBuilder.toString();
+    }
+
     /**
      * Using a static Builder class for the complex class Board so it will be easier to manage
      */
     public static class Builder {
-        Map<Integer, Piece> boardConfig;
+        final Map<Integer, Piece> boardConfig;
         Alliance nextMoveMaker;
         Pawn enPassantPawn;
 

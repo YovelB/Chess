@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: C:\Users/yovel/JetBrainsProjects/Chess/Chess/src
+Main-Class: com.Main
+

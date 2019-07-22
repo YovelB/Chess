@@ -9,22 +9,19 @@ import java.util.Map;
  * BoardUtils class that represents utilities for the board
  */
 public class BoardUtils {
+    public static final int NUM_TILES = 64;
+    public static final int NUM_TILES_PER_ROW = 8;
     public static final boolean[] FIRST_FILE = initColumn(0);
     public static final boolean[] SECOND_FILE = initColumn(1);
     public static final boolean[] SEVENTH_FILE = initColumn(6);
     public static final boolean[] EIGHTH_FILE = initColumn(7);
-
     public static final boolean[] EIGHTH_RANK = initRow(0);
     public static final boolean[] SEVENTH_RANK = initRow(8);
     public static final boolean[] SECOND_RANK = initRow(48);
     public static final boolean[] FIRST_RANK = initRow(56);
-
     private static final String[] ALGEBRAIC_NOTATION = initializeAlgebraicNotation();
-    private static final Map<String, Integer> POSITION_TO_COORDINATE = initializePositionToCoordinateMap();
-
     private static final int START_TILE_INDEX = 0;
-    public static final int NUM_TILES = 64;
-    public static final int NUM_TILES_PER_ROW = 8;
+    private static final Map<String, Integer> POSITION_TO_COORDINATE = initializePositionToCoordinateMap();
 
     private BoardUtils() {
         throw new RuntimeException("You cannot instantiate me");

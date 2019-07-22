@@ -11,18 +11,11 @@ import com.google.common.collect.ImmutableMap;
  */
 
 public abstract class Tile {
-    private final int tileCoordinate;
     private static final Map<Integer, EmptyTile> EMPTY_TILES_CACHE = createAllPossibleEmptyTiles();
+    private final int tileCoordinate;
 
     private Tile(final int tileCoordinate) {
         this.tileCoordinate = tileCoordinate;
-    }
-
-    public abstract boolean isTileOccupied();
-    public abstract Piece getPiece();
-
-    public int getTileCoordinate() {
-        return this.tileCoordinate;
     }
 
     private static Map<Integer, EmptyTile> createAllPossibleEmptyTiles() {
@@ -35,6 +28,14 @@ public abstract class Tile {
 
     static Tile createTile(final int tileCoordinate, final Piece piece) {
         return (piece != null) ? new OccupiedTile(tileCoordinate, piece) : EMPTY_TILES_CACHE.get(tileCoordinate);
+    }
+
+    public abstract boolean isTileOccupied();
+
+    public abstract Piece getPiece();
+
+    public int getTileCoordinate() {
+        return this.tileCoordinate;
     }
 
     public static final class EmptyTile extends Tile {
